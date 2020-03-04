@@ -7,6 +7,8 @@ using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TestingGraphQLClients.GraphQueries;
+using TestingGraphQLClients.Models.GraphResponses;
 using GraphQLRequest = GraphQL.GraphQLRequest;
 
 namespace TestingGraphQLClients.Controllers
@@ -30,24 +32,7 @@ namespace TestingGraphQLClients.Controllers
 
             graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"bearer {token}");
 
-            var HomeContentRequest = new GraphQLRequest
-            {
-                Query = @"
-                query HomeContent($id: Guid!) {
-                    findHomeContent(id: $id) {
-                        id
-                        flatData {
-                            pageTitle
-                            videoTitle
-                         }
-                    }
-                }",
-                OperationName = "HomeContent",
-                Variables = new
-                {
-                    id = "2a8c32bb-3793-44d1-ab26-92ca24ae803d"
-                }
-            };
+            var HomeContentRequest = HomeQueries.GetHomeDetailQuery("2a8c32bb-3793-44d1-ab26-92ca24ae803d");
 
 
             var graphQLResponse = await graphQLClient.SendQueryAsync<HomeResponse>(HomeContentRequest);
@@ -55,22 +40,5 @@ namespace TestingGraphQLClients.Controllers
         }
     }
 
-    public class HomeResponse
-    {
-        public HomeContent findHomeContent { get; set; }
-
-        public class HomeContent
-        {
-            public string Id { get; set; }
-
-            public HomeDetails FlatData { get; set; }
-
-            public class HomeDetails
-            {
-                public string PageTitle { get; set; }
-
-                public string VideoTitle { get; set; }
-            }
-        }
-    }
+    
 }
