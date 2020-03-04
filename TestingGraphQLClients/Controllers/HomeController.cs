@@ -17,55 +17,59 @@ namespace TestingGraphQLClients.Controllers
     {
         // GET: api/Home
         [HttpGet]
-        public async Task<GraphQLResponse<PersonAndFilmsResponse>> GetAsync()
+        public async Task<GraphQLResponse<HomeResponse>> GetAsync()
         {
-            //var graphQLClient = new GraphQLHttpClient("https://swapi.apis.guru/");
+            string urlString = "{URL}";
+            var token = "{Token}";
 
-            GraphQLHttpClient graphQLClient = new GraphQLHttpClient(o => { o.EndPoint = new Uri("https://swapi.apis.guru/"); 
-                o.JsonSerializer = new NewtonsoftJsonSerializer(); });
+            GraphQLHttpClient graphQLClient = new GraphQLHttpClient(o =>
+            {
+                o.EndPoint = new Uri(urlString);
+                o.JsonSerializer = new NewtonsoftJsonSerializer();
+            });
 
-            var personAndFilmsRequest = new GraphQLRequest
+            graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"bearer {token}");
+
+            var HomeContentRequest = new GraphQLRequest
             {
                 Query = @"
-                query PersonAndFilms($id: ID) {
-                    person(id: $id) {
-                        name
-                        filmConnection {
-                            films {
-                                title
-                            }
-                        }
+                query HomeContent($id: Guid!) {
+                    findHomeContent(id: $id) {
+                        id
+                        flatData {
+                            pageTitle
+                            videoTitle
+                         }
                     }
                 }",
-                OperationName = "PersonAndFilms",
+                OperationName = "HomeContent",
                 Variables = new
                 {
-                    id = "cGVvcGxlOjE="
+                    id = "2a8c32bb-3793-44d1-ab26-92ca24ae803d"
                 }
             };
 
-            var graphQLResponse = await graphQLClient.SendQueryAsync<PersonAndFilmsResponse>(personAndFilmsRequest);
+
+            var graphQLResponse = await graphQLClient.SendQueryAsync<HomeResponse>(HomeContentRequest);
             return graphQLResponse;
         }
     }
 
-    public class PersonAndFilmsResponse
+    public class HomeResponse
     {
-        public PersonContent Person { get; set; }
+        public HomeContent findHomeContent { get; set; }
 
-        public class PersonContent
+        public class HomeContent
         {
-            public string Name { get; set; }
-            public FilmConnectionContent FilmConnection { get; set; }
+            public string Id { get; set; }
 
-            public class FilmConnectionContent
+            public HomeDetails FlatData { get; set; }
+
+            public class HomeDetails
             {
-                public List<FilmContent> Films { get; set; }
+                public string PageTitle { get; set; }
 
-                public class FilmContent
-                {
-                    public string Title { get; set; }
-                }
+                public string VideoTitle { get; set; }
             }
         }
     }
