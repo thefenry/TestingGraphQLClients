@@ -27,7 +27,7 @@ namespace TestingGraphQLClients.Controllers
 
             var homeContentRequest = HomeQueries.GetHomeDetailQuery("2a8c32bb-3793-44d1-ab26-92ca24ae803d");
 
-            return await _client.SendRequestAsync(urlString, token, homeContentRequest);
+            return await _client.SendRequestAsync<HomeResponse>(urlString, token, homeContentRequest);
         }
     }
 }

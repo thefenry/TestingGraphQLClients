@@ -3,19 +3,15 @@ using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using System;
 using System.Threading.Tasks;
-using TestingGraphQLClients.Models.GraphResponses;
 using GraphQLRequest = GraphQL.GraphQLRequest;
 
 namespace TestingGraphQLClients.Clients
 {
     public class GraphQLClient
     {
-        public void QueryGraph()
-        {
+        public void QueryGraph() { }
 
-        }
-
-        public async Task<GraphQLResponse<HomeResponse>> SendRequestAsync(string urlString, string token, GraphQLRequest homeContentRequest)
+        public async Task<GraphQLResponse<T>> SendRequestAsync<T>(string urlString, string token, GraphQLRequest contentRequest)
         {
             GraphQLHttpClient graphQLClient = new GraphQLHttpClient(o =>
             {
@@ -24,9 +20,8 @@ namespace TestingGraphQLClients.Clients
             });
 
             graphQLClient.HttpClient.DefaultRequestHeaders.Add("Authorization", $"bearer {token}");
-
-
-            GraphQLResponse<HomeResponse> graphQLResponse = await graphQLClient.SendQueryAsync<HomeResponse>(homeContentRequest);
+            
+            GraphQLResponse<T> graphQLResponse = await graphQLClient.SendQueryAsync<T>(contentRequest);
             return graphQLResponse;
         }
     }
